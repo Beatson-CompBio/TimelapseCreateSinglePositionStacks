@@ -1,10 +1,19 @@
-dir1 = getDirectory("Choose Source Directory "); //User selection of folder containing image sequence
+//User dialog to get folder location, number of positions and channels and also downsampling option
+ds_opt = newArray("None", "2", "4", "8");
+Dialog.create("Timelapse parameters");
+Dialog.addDirectory("Directory of nd files:", File.directory)
+Dialog.addNumber("Number of positions:", 1);
+Dialog.addNumber("Number of channels:", 1);
+Dialog.addChoice("Downsampling factor:", ds_opt);
+Dialog.show();
+dir1 = Dialog.getString();
+npos = Dialog.getNumber();
+nch = Dialog.getNumber();;
+ds = Dialog.getChoice();
+
 list = getFileList(dir1);
 ffdir = dir1 + File.separator + "CombinedTiffs" + File.separator;
 File.makeDirectory(ffdir);
-
-npos = getNumber("Please enter the number of positions", 0);
-nch = getNumber("Please enter the number of channels", 0);
 
 ChStr = "";
 
@@ -38,9 +47,10 @@ for (i=1; i<=npos; i++) {
 			run("Blue");
 		}
 	}
+	if (ds != "None") {
+		run("Bin...", "x=" + ds + " y=" + ds + " bin=Average");
+	}
 	saveAs("Tiff", ffdir + "/s" + i + ".tif");
 	run("Close All");
 }
-
-//File.openSequence("Z:/SHARED/1 Week/Claire Mitchell/260123_Spp1_KPN Coculture/", " filter=(..s5_t121..)");
 
